@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cryptonet Web</title>
+</head>
+<body>
+    <h2>Szyfrowanie plików</h2>
+    <input type="file" id="fileToEncrypt">
+    <button onclick="encryptFile()">Szyfruj plik</button>
+
+    <h2>Odszyfrowanie plików</h2>
+    <input type="file" id="fileToDecrypt">
+    <input type="text" id="key" placeholder="Klucz szyfrujący (hex)">
+    <button onclick="decryptFile()">Odszyfruj plik</button>
+
+    <script>
+        async function encryptFile() {
+            const file = document.getElementById('fileToEncrypt').files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('http://localhost:8000/encrypt', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            alert(`Zaszyfrowane dane: ${result.encrypted_data}\nKlucz: ${result.key}`);
+        }
+
+        async function decryptFile() {
+            const file = document.getElementById('fileToDecrypt').files[0];
+            const key = document.getElementById('key').value;
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`http://localhost:8000/decrypt?key_hex=${key}`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            alert(`Odszyfrowane dane: ${result.decrypted_data}`);
+        }
+    </script>
+</body>
+</html>
